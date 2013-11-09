@@ -106,7 +106,6 @@ public class GestureRecorder implements SensorEventListener {
 		            // Do nothing.
 		        }
 		    }).show();
-			Log.i("Data", dataString);
 		}
 		else {
 			Log.i("Data", dataString);
@@ -181,6 +180,7 @@ public class GestureRecorder implements SensorEventListener {
     	    	e.printStackTrace();
     	    	return e.toString();
     	    }
+    	    Log.i("Posted", "posted");
     	    return "Gesture sent successfully";
 		}
 		

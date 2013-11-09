@@ -11,6 +11,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GestureActivity extends Activity implements SensorEventListener{
 	private SensorManager manager;
@@ -81,6 +82,7 @@ public class GestureActivity extends Activity implements SensorEventListener{
 	}
 	
 	private void unregisterListeners() {
+		Toast.makeText(this, "Gesture detected - recording", Toast.LENGTH_SHORT).show();
 		manager.unregisterListener(this);
 	}
 	
@@ -89,13 +91,11 @@ public class GestureActivity extends Activity implements SensorEventListener{
 		ArrayList<float[]> data = new ArrayList<float[]>();
 		unregisterListeners();
 		GestureRecorder r = new GestureRecorder(this, false);
-	    new Handler().postDelayed(new Runnable() {
-	        @Override
-	        public void run() {
-	        	registerListeners();
-	        }
-	    }, recordTime*1000);
-
+//	    new Handler().postDelayed(new Runnable() {
+//	        @Override
+//	        public void run() {
+//	        	registerListeners();
+//	        }
+//	    }, recordTime*1000);
 	}
-	
 }
