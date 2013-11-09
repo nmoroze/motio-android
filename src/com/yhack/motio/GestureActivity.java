@@ -91,11 +91,11 @@ public class GestureActivity extends Activity implements SensorEventListener{
 		ArrayList<float[]> data = new ArrayList<float[]>();
 		unregisterListeners();
 		GestureRecorder r = new GestureRecorder(this, false);
-//	    new Handler().postDelayed(new Runnable() {
-//	        @Override
-//	        public void run() {
-//	        	registerListeners();
-//	        }
-//	    }, recordTime*1000);
+	    new Handler().postDelayed(new Runnable() {
+	        @Override
+	        public void run() {
+	        	registerListeners();
+	        }
+	    }, 5*1000);
 	}
 }
