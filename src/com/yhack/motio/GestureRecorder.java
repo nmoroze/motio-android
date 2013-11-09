@@ -35,8 +35,10 @@ public class GestureRecorder implements SensorEventListener {
 	public boolean doneRecording = false;
 	boolean newGesture;
 	String dataString;
+	float[] dataArray = new float[6];
 	int recordTime = 2; //time to record in sec
 	ArrayList<float[]> data = new ArrayList<float[]>();
+	StringBuilder builtString;
 
 	Activity parent;
 
@@ -60,6 +62,7 @@ public class GestureRecorder implements SensorEventListener {
 		 	SENSOR_DELAY_NORMAL	rate (default) suitable for screen orientation changes
 		*/
 	    final SensorEventListener listener = this;
+
 	    new Handler().postDelayed(new Runnable() {
 	        @Override
 	        public void run() {
@@ -76,16 +79,18 @@ public class GestureRecorder implements SensorEventListener {
 
 	private void postData() {
 		Log.i("uh oh", ""+data.size());
-		dataString = "[";
+		builtString = new StringBuilder();
+		builtString.append("[");
 		for(int i=0; i<data.size(); i++) {
-			float[] data_t = data.get(i);
-			dataString+="[";
+			dataArray = data.get(i);
+			builtString.append("[");
 			for(int t=0; t<5; t++) 
-				dataString+=data_t[t]+", ";
-			dataString+=data_t[5]+"], ";
+				builtString.append(dataArray[t]+", ");
+			builtString.append(dataArray[5]+"], ");
 		}
-		dataString+="]";
+		builtString.append("]");
 		
+		dataString = builtString.toString();
 		if(newGesture) {
 			final EditText input = new EditText(this.parent);
 			new AlertDialog.Builder(this.parent)
@@ -110,7 +115,6 @@ public class GestureRecorder implements SensorEventListener {
 	}
 	
 	public void onSensorChanged(SensorEvent event){
-
 		// check sensor type
 		if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
 			 xAccel = event.values[0];
