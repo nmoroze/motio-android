@@ -21,10 +21,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.Editable;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class GestureRecorder implements SensorEventListener {
 	private SensorManager sensorManager;
@@ -92,26 +94,7 @@ public class GestureRecorder implements SensorEventListener {
 		    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
 		            Editable value = input.getText(); 
-		    		Log.i("Name", value.toString());
-		   		 // Create a new HttpClient and Post Header
-		    	    HttpClient httpclient = new DefaultHttpClient();
-		    	    HttpPost httppost = new HttpPost("motio.herokuapp.com/add_gesture");
-		    
-		    	    try {
-		    	        // Add your data
-		    	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-		    	        nameValuePairs.add(new BasicNameValuePair("name", value.toString()));
-		    	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
-		    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		    
-		    	        // Execute HTTP Post Request
-		    	        HttpResponse response = httpclient.execute(httppost);
-		    
-		    	    } catch (ClientProtocolException e) {
-		    	    	e.printStackTrace();
-		    	    } catch (IOException e) {
-		    	    	e.printStackTrace();
-		    	    }
+//		            new PostRequest(value.toString(), dataString, true).execute("http://motio.herokuapp.com/add_gesture");
 		        }
 		    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
@@ -122,24 +105,7 @@ public class GestureRecorder implements SensorEventListener {
 		}
 		else {
 			Log.i("Data", dataString);
-	   		 // Create a new HttpClient and Post Header
-    	    HttpClient httpclient = new DefaultHttpClient();
-    	    HttpPost httppost = new HttpPost("motio.herokuapp.com/do_gesture");
-    
-    	    try {
-    	        // Add your data
-    	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-    	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
-    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-    
-    	        // Execute HTTP Post Request
-    	        HttpResponse response = httpclient.execute(httppost);
-    
-    	    } catch (ClientProtocolException e) {
-    	    	e.printStackTrace();
-    	    } catch (IOException e) {
-    	    	e.printStackTrace();
-    	    }
+            new PostRequest("", dataString, true).execute("http://motio.herokuapp.com/do_gesture");
 		}
 	}
 	
@@ -172,5 +138,47 @@ public class GestureRecorder implements SensorEventListener {
 	
 	public ArrayList<float[]> getData() {
 		return data;
+	}
+	
+	private class PostRequest extends AsyncTask<String, Void, Boolean> {
+		private String name="", dataString="";
+		private boolean newGesture;
+		public PostRequest(String name, String dataString, boolean newGesture) {
+			super();
+			this.name = name;
+			this.dataString = dataString;
+			this.newGesture = newGesture;
+		}
+		
+		@Override
+		protected Boolean doInBackground(String...url) {
+			 // Create a new HttpClient and Post Header
+    	    HttpClient httpclient = new DefaultHttpClient();
+    	    HttpPost httppost = new HttpPost(url[0]);
+    
+    	    try {
+    	        // Add your data
+    	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+    	        if(newGesture)
+    	        	nameValuePairs.add(new BasicNameValuePair("name", name));
+    	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
+    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+    
+    	        // Execute HTTP Post Request
+    	        HttpResponse response = httpclient.execute(httppost);
+    
+    	    } catch (ClientProtocolException e) {
+    	    	e.printStackTrace();
+    	    	return false;
+    	    } catch (IOException e) {
+    	    	return false;
+    	    }
+    	    return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			
+		}
 	}
 }
