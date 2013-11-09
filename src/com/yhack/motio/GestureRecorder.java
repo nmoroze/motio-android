@@ -32,6 +32,7 @@ public class GestureRecorder implements SensorEventListener {
 	float xRot, yRot, zRot;
 	public boolean doneRecording = false;
 	boolean newGesture;
+	String dataString;
 	int recordTime = 2; //time to record in sec
 	ArrayList<float[]> data = new ArrayList<float[]>();
 
@@ -73,7 +74,7 @@ public class GestureRecorder implements SensorEventListener {
 
 	private void postData() {
 		Log.i("uh oh", ""+data.size());
-		String dataString = "[";
+		dataString = "[";
 		for(int i=0; i<data.size(); i++) {
 			float[] data_t = data.get(i);
 			dataString+="[";
@@ -92,6 +93,25 @@ public class GestureRecorder implements SensorEventListener {
 		        public void onClick(DialogInterface dialog, int whichButton) {
 		            Editable value = input.getText(); 
 		    		Log.i("Name", value.toString());
+		   		 // Create a new HttpClient and Post Header
+		    	    HttpClient httpclient = new DefaultHttpClient();
+		    	    HttpPost httppost = new HttpPost("motio.herokuapp.com/add_gesture");
+		    
+		    	    try {
+		    	        // Add your data
+		    	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+		    	        nameValuePairs.add(new BasicNameValuePair("name", value.toString()));
+		    	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
+		    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		    
+		    	        // Execute HTTP Post Request
+		    	        HttpResponse response = httpclient.execute(httppost);
+		    
+		    	    } catch (ClientProtocolException e) {
+		    	    	e.printStackTrace();
+		    	    } catch (IOException e) {
+		    	    	e.printStackTrace();
+		    	    }
 		        }
 		    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
@@ -102,30 +122,27 @@ public class GestureRecorder implements SensorEventListener {
 		}
 		else {
 			Log.i("Data", dataString);
+	   		 // Create a new HttpClient and Post Header
+    	    HttpClient httpclient = new DefaultHttpClient();
+    	    HttpPost httppost = new HttpPost("motio.herokuapp.com/do_gesture");
+    
+    	    try {
+    	        // Add your data
+    	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+    	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
+    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+    
+    	        // Execute HTTP Post Request
+    	        HttpResponse response = httpclient.execute(httppost);
+    
+    	    } catch (ClientProtocolException e) {
+    	    	e.printStackTrace();
+    	    } catch (IOException e) {
+    	    	e.printStackTrace();
+    	    }
 		}
-
-		 // Create a new HttpClient and Post Header
-//	    HttpClient httpclient = new DefaultHttpClient();
-//	    HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");
-//
-//	    try {
-//	        // Add your data
-//	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//	        nameValuePairs.add(new BasicNameValuePair("name", "please"));
-//	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
-//	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//
-//	        // Execute HTTP Post Request
-//	        HttpResponse response = httpclient.execute(httppost);
-//
-//	    } catch (ClientProtocolException e) {
-//	    	e.printStackTrace();
-//	    } catch (IOException e) {
-//	    	e.printStackTrace();
-//	    }
 	}
-//	while(!handler.doneRecording);
-
+	
 	public void onSensorChanged(SensorEvent event){
 
 		// check sensor type
