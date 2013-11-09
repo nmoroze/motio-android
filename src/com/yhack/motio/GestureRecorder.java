@@ -110,7 +110,7 @@ public class GestureRecorder implements SensorEventListener {
 		}
 		else {
 			Log.i("Data", dataString);
-            new PostRequest("", dataString, true).execute("http://motio.herokuapp.com/do_gesture");
+            new PostRequest("", dataString, false).execute("http://motio.herokuapp.com/do_gesture");
 		}
 	}
 	
@@ -144,7 +144,7 @@ public class GestureRecorder implements SensorEventListener {
 		return data;
 	}
 	
-	private class PostRequest extends AsyncTask<String, Void, Boolean> {
+	private class PostRequest extends AsyncTask<String, Void, String> {
 		private String name="", dataString="";
 		private boolean newGesture;
 		public PostRequest(String name, String dataString, boolean newGesture) {
@@ -155,7 +155,7 @@ public class GestureRecorder implements SensorEventListener {
 		}
 		
 		@Override
-		protected Boolean doInBackground(String...url) {
+		protected String doInBackground(String...url) {
 			 // Create a new HttpClient and Post Header
     	    HttpClient httpclient = new DefaultHttpClient();
     	    HttpPost httppost = new HttpPost(url[0]);
@@ -163,9 +163,12 @@ public class GestureRecorder implements SensorEventListener {
     	    try {
     	        // Add your data
     	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-    	        if(newGesture)
+    	        if(newGesture) {
     	        	nameValuePairs.add(new BasicNameValuePair("name", name));
+    	        	Log.i("Name", name);
+    	        }
     	        nameValuePairs.add(new BasicNameValuePair("data", dataString));
+    	        Log.i("Data", dataString);
     	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
     
     	        // Execute HTTP Post Request
@@ -173,16 +176,17 @@ public class GestureRecorder implements SensorEventListener {
     
     	    } catch (ClientProtocolException e) {
     	    	e.printStackTrace();
-    	    	return false;
+    	    	return e.toString();
     	    } catch (IOException e) {
-    	    	return false;
+    	    	e.printStackTrace();
+    	    	return e.toString();
     	    }
-    	    return true;
+    	    return "Gesture sent successfully";
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
-			
+		protected void onPostExecute(String result) {
+			 Toast.makeText(parent, result, Toast.LENGTH_SHORT).show();
 		}
 	}
 }
