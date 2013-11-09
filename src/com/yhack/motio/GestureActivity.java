@@ -1,5 +1,7 @@
 package com.yhack.motio;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -7,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 public class GestureActivity extends Activity implements SensorEventListener{
@@ -16,24 +19,18 @@ public class GestureActivity extends Activity implements SensorEventListener{
 	float xAccel, yAccel, zAccel;
 	float xRot, yRot, zRot;
 	int restElapsed = 0;
-	int restThresh = 500;
+	int restThresh = 1000;
 	boolean happening = false;
-	
+	int recordTime = 2;
+	boolean done = false;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gesture);
 		
 		manager= (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-		// add listener. The listener will be HelloAndroid (this) class
-		manager.registerListener(this,
-				manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-				SensorManager.SENSOR_DELAY_NORMAL);
-		
-		manager.registerListener(this,
-				manager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-				SensorManager.SENSOR_DELAY_NORMAL);
-
+		registerListeners();
 	}
 
 	@Override
@@ -57,19 +54,48 @@ public class GestureActivity extends Activity implements SensorEventListener{
 		
 		if((Math.abs(xRot) > rotThresh || Math.abs(yRot) > rotThresh || Math.abs(zRot) > rotThresh) && 
 				(Math.abs(xAccel) > accelThresh || Math.abs(yAccel) > accelThresh || Math.abs(zAccel) > accelThresh)) {
-			if(!happening)
-				Log.i("YES", "It's happening");
-			happening = true;
+			if(!happening) {
+				readGesture();
+				happening = true;
+			}
 		}
 		else {
 			if(happening)
 				restElapsed++;
-			if(restElapsed>restThresh) {
+			if(restElapsed>restThresh && happening) {
 				Log.i("NO", "it stopped happening");
 				happening = false;
 				restElapsed = 0;
 			}
 		}
+	}
+	
+	private void registerListeners() {
+		manager.registerListener(this,
+				manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+				SensorManager.SENSOR_DELAY_NORMAL);
+		
+		manager.registerListener(this,
+				manager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+				SensorManager.SENSOR_DELAY_NORMAL);
+	}
+	
+	private void unregisterListeners() {
+		manager.unregisterListener(this);
+	}
+	
+	private void readGesture() {
+		Log.i("yup yup", "gonna record");
+		ArrayList<float[]> data = new ArrayList<float[]>();
+		unregisterListeners();
+		GestureRecorder r = new GestureRecorder(this, false);
+	    new Handler().postDelayed(new Runnable() {
+	        @Override
+	        public void run() {
+	        	registerListeners();
+	        }
+	    }, recordTime*1000);
+
 	}
 	
 }

@@ -33,7 +33,7 @@ public class MainActivity extends Activity  {
     }
     
     public void record(View v) {
-    	GestureRecorder recorder = new GestureRecorder(this);
+    	GestureRecorder recorder = new GestureRecorder(this, true);
     }
     
     public void runGestures(View v) {
