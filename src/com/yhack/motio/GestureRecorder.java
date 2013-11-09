@@ -99,7 +99,7 @@ public class GestureRecorder implements SensorEventListener {
 		    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
 		            Editable value = input.getText(); 
-//		            new PostRequest(value.toString(), dataString, true).execute("http://motio.herokuapp.com/add_gesture");
+		            new PostRequest(value.toString(), dataString, true).execute("http://motio.herokuapp.com/add_gesture");
 		        }
 		    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
