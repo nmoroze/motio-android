@@ -20,7 +20,6 @@ public class MainActivity extends Activity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
        // getActionBar().setDisplayHomeAsUpEnabled(true);
-        intent=new Intent(getApplicationContext(), SensorService.class);
      }
     
     @Override
@@ -34,16 +33,11 @@ public class MainActivity extends Activity  {
     }
     
     public void record(View v) {
-    	SensorHandler handler = new SensorHandler(this);
+    	GestureRecorder recorder = new GestureRecorder(this);
     }
     
-    public void startService(View v)
-    {
-        this.startService(intent);
-    }
-
-    public void stopService(View v)
-    {
-        this.stopService(intent);
+    public void runGestures(View v) {
+    	Intent i = new Intent(this, GestureActivity.class);
+    	startActivity(i); 
     }
 }

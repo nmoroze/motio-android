@@ -11,7 +11,7 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.util.Log;
 
-public class SensorHandler implements SensorEventListener {
+public class GestureRecorder implements SensorEventListener {
 	private SensorManager sensorManager;
 	float xAccel, yAccel, zAccel;
 	float xRot, yRot, zRot;
@@ -21,7 +21,7 @@ public class SensorHandler implements SensorEventListener {
 
 	Activity parent;
 
-	public SensorHandler(Activity a) {
+	public GestureRecorder(Activity a) {
 		this.parent = a;
 		sensorManager= (SensorManager) this.parent.getSystemService(Context.SENSOR_SERVICE);
 		// add listener. The listener will be HelloAndroid (this) class
